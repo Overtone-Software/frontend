@@ -146,3 +146,9 @@ tr:last-child td { border-bottom: 0; }
 
 .memo { white-space: pre-wrap; font-size: 14px; line-height: 1.65; }
 
+@media (max-width: 720px) {
+  .shell { flex-direction: column; }
+  .sidebar { width: 100%; border-right: 0; border-bottom: 1px solid var(--border); }
+  .nav { display: flex; gap: 4px; overflow-x: auto; }
+  .main { padding: 20px 16px; }
+}
