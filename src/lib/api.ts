@@ -145,3 +145,10 @@ export const api = {
     }, false);
   },
 
+  listCalls: () => request<{ items: Call[]; total: number }>('/calls?limit=100'),
+  getCall: (id: string) => request<Call>(`/calls/${id}`),
+  listMemos: () => request<{ items: Memo[] }>('/memos'),
+  createMemo: (callId: string) => request<Memo>(`/calls/${callId}/memo`, { method: 'POST' }),
+  usage: () => request<{ plan: string; items: UsageItem[] }>('/usage'),
+  plans: () => request<Plan[]>('/plans', {}, false),
+};
