@@ -115,3 +115,33 @@ export interface Plan {
   sso_enabled: boolean;
 }
 
+export const api = {
+  async login(email: string, password: string): Promise<Session> {
+    const tokens = await request<{ access_token: string; refresh_token: string; expires_in: number }>(
+      '/auth/login',
+      { method: 'POST', body: JSON.stringify({ email, password }) },
+      false,
+    );
+    const me = await request<{ user: { email: string }; active_organization_id: string }>(
+      '/auth/me',
+      { headers: { Authorization: `Bearer ${tokens.access_token}` } },
+      false,
+    );
+    const session: Session = {
+      accessToken: tokens.access_token,
+      refreshToken: tokens.refresh_token,
+      organizationId: me.active_organization_id,
+      email: me.user.email,
+      expiresAt: Date.now() + tokens.expires_in * 1000,
+    };
+    writeSession(session);
+    return session;
+  },
+
+  signup(input: { email: string; password: string; full_name: string; organization_name: string }) {
+    return request<{ access_token: string }>('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(input),
+    }, false);
+  },
+
