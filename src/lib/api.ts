@@ -42,3 +42,33 @@ export class ApiError extends Error {
   }
 }
 
+async function request<T>(path: string, init: RequestInit = {}, auth = true): Promise<T> {
+  const session = auth ? readSession() : null;
+  if (auth && !session) throw new ApiError(401, 'unauthorized', 'Sign in to continue.');
+
+  const response = await fetch(`${API_V1}${path}`, {
+    ...init,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(session
+        ? { Authorization: `Bearer ${session.accessToken}`, 'X-Organization-Id': session.organizationId }
+        : {}),
+      ...((init.headers as Record<string, string>) ?? {}),
+    },
+  });
+
+  if (!response.ok) {
+    let code = 'http_error';
+    let message = `Request failed (${response.status}).`;
+    try {
+      const body = (await response.json()) as { error?: { code?: string; message?: string } };
+      code = body.error?.code ?? code;
+      message = body.error?.message ?? message;
+    } catch {
+      /* non-JSON error body */
+    }
+    throw new ApiError(response.status, code, message);
+  }
+  return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
+}
+
