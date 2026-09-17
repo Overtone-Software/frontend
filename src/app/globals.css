@@ -136,3 +136,13 @@ tr:last-child td { border-bottom: 0; }
 
 .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 
+.banner { padding: 10px 12px; border-radius: 9px; font-size: 14px; margin-bottom: 14px; }
+.banner--error { background: color-mix(in srgb, var(--danger) 12%, transparent); color: var(--danger); }
+
+.empty { color: var(--muted); text-align: center; padding: 40px 20px; font-size: 14px; }
+
+.center { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+.auth-card { width: 100%; max-width: 380px; }
+
+.memo { white-space: pre-wrap; font-size: 14px; line-height: 1.65; }
+
