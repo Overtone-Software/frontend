@@ -72,3 +72,46 @@ async function request<T>(path: string, init: RequestInit = {}, auth = true): Pr
   return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
 }
 
+export interface Call {
+  id: string;
+  company_id: string;
+  title: string;
+  status: string;
+  status_detail: string;
+  fiscal_year: number | null;
+  fiscal_quarter: number | null;
+  source_url: string;
+  duration_seconds: number | null;
+}
+
+export interface Memo {
+  id: string;
+  call_id: string;
+  title: string;
+  body_md: string;
+  citations: Array<{ n: number; timestamp: string; speakers: string; section: string }>;
+  status: string;
+}
+
+export interface UsageItem {
+  kind: string;
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
+export interface Plan {
+  slug: string;
+  name: string;
+  description: string;
+  monthly_price_usd: number;
+  annual_price_usd: number;
+  monthly_calls: number;
+  monthly_chat_messages: number;
+  monthly_memos: number;
+  max_seats: number;
+  cross_call_search: boolean;
+  qoq_analysis: boolean;
+  sso_enabled: boolean;
+}
+
