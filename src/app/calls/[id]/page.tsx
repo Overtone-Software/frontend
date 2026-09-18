@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { Markdown } from '@/components/Markdown';
 import { Shell } from '@/components/Shell';
 import {
   api,
@@ -522,7 +523,7 @@ export default function CallPage() {
           ) : (
             <div className="panel panel--pad">
               <h2 style={{ marginTop: 0 }}>{memo.title}</h2>
-              <div className="prose">{memo.body_md}</div>
+              <div><Markdown source={memo.body_md} /></div>
               {memo.citations?.length > 0 && (
                 <div className="cites">
                   {memo.citations.map((c) => (

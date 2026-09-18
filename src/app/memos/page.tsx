@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { Markdown } from '@/components/Markdown';
 import { Shell } from '@/components/Shell';
 import { api, ApiError, type Memo } from '@/lib/api';
 
@@ -61,7 +62,7 @@ export default function MemosPage() {
 
             {open === memo.id && (
               <>
-                <div className="prose" style={{ marginTop: 12 }}>{memo.body_md}</div>
+                <div style={{ marginTop: 12 }}><Markdown source={memo.body_md} /></div>
                 {memo.citations?.length > 0 && (
                   <div className="cites">
                     {memo.citations.map((c) => (
