@@ -1,44 +1,61 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Shell } from '@/components/Shell';
-import { api, type Plan } from '@/lib/api';
+import { api } from '@/lib/api';
 
 export default function PricingPage() {
-  const [plans, setPlans] = useState<Plan[] | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
 
   useEffect(() => {
-    api.plans().then(setPlans).catch(() => setPlans([]));
+    api.usage().then((r) => setPlan(r.plan)).catch(() => setPlan(''));
   }, []);
 
   return (
     <Shell>
-      <h1>Plans</h1>
-      <p className="lede">
-        Cross-call search and quarter-over-quarter analysis are what compound with your
-        archive — they are the reason to move up a tier.
-      </p>
+      <div className="head">
+        <div className="head__text">
+          <h1>Plans</h1>
+          <p className="lede">
+            Paid plans are not open yet. Everything is running on the free plan while we
+            finish pricing, so nothing is gated and nothing needs a card.
+          </p>
+        </div>
+      </div>
 
-      <div className="grid">
-        {plans?.map((plan) => (
-          <div className="panel panel--pad" key={plan.slug}>
-            <div className="stat__label">{plan.name}</div>
-            <div className="stat__value">
-              ${Number(plan.monthly_price_usd)}
-              <span style={{ fontSize: 14, color: 'var(--muted)', fontWeight: 400 }}>/mo</span>
+      <section className="hero">
+        <span className="hero__label">Coming soon</span>
+        <h2 className="hero__title">Pricing is still being worked out</h2>
+        <p style={{ color: '#9aa5c8', fontSize: 14, margin: '12px 0 22px', maxWidth: '58ch' }}>
+          When plans open, the things that compound with your archive — search across every
+          call you have captured, and quarter-over-quarter language diffs — are what will
+          separate the tiers. Until then you have the full workflow on the free plan.
+        </p>
+        <div className="row">
+          <Link className="btn btn--onink" href="/usage">See what you have used</Link>
+          <Link className="btn btn--onink" href="/calls">Back to calls</Link>
+        </div>
+      </section>
+
+      <h2>Your plan today</h2>
+      <div className="panel">
+        <div className="facts">
+          <div className="fact">
+            <div className="fact__k">Current plan</div>
+            <div className="fact__v" style={{ textTransform: 'capitalize' }}>
+              {plan === null ? 'Loading…' : plan || '—'}
             </div>
-            <p className="stat__sub" style={{ minHeight: 34 }}>{plan.description}</p>
-            <ul style={{ paddingLeft: 18, margin: '8px 0 0', fontSize: 13, color: 'var(--muted)' }}>
-              <li>{plan.monthly_calls} calls / month</li>
-              <li>{plan.monthly_chat_messages} questions</li>
-              <li>{plan.monthly_memos} memos</li>
-              <li>{plan.max_seats} seat{plan.max_seats === 1 ? '' : 's'}</li>
-              <li>{plan.cross_call_search ? '✓' : '—'} Cross-call search</li>
-              <li>{plan.qoq_analysis ? '✓' : '—'} Quarter-over-quarter</li>
-              <li>{plan.sso_enabled ? '✓' : '—'} SSO</li>
-            </ul>
           </div>
-        ))}
+          <div className="fact">
+            <div className="fact__k">Cost</div>
+            <div className="fact__v">Free</div>
+          </div>
+          <div className="fact">
+            <div className="fact__k">Allowance</div>
+            <div className="fact__v"><Link href="/usage">Usage this month</Link></div>
+          </div>
+        </div>
       </div>
     </Shell>
   );

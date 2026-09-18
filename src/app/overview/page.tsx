@@ -168,7 +168,7 @@ export default function OverviewPage() {
           </div>
         )}
         <p className="hint" style={{ marginTop: 14 }}>
-          You are on the {plan || '—'} plan. <Link href="/pricing">Compare plans</Link>
+          You are on the {plan || '—'} plan. <Link href="/pricing">Paid plans are coming</Link>
         </p>
       </div>
 
