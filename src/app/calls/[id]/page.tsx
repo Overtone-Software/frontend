@@ -12,19 +12,29 @@ import {
   type Call,
   type ChatMessageRecord,
   type Citation,
+  type Comparison,
   type Memo,
   type Note,
   type Segment,
+  type Thesis,
 } from '@/lib/api';
 
-type Tab = 'captures' | 'ask' | 'signals' | 'transcript' | 'memo';
+type Tab = 'captures' | 'ask' | 'signals' | 'compare' | 'transcript' | 'memo';
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'captures', label: 'Captures & notes' },
   { id: 'ask', label: 'Ask' },
   { id: 'signals', label: 'Signals' },
+  { id: 'compare', label: 'vs. last quarter' },
   { id: 'transcript', label: 'Transcript' },
   { id: 'memo', label: 'Memo' },
+];
+
+const MEMO_TEMPLATES: Array<{ id: string; label: string; hint: string }> = [
+  { id: '', label: 'Match the recording', hint: 'Picks the shape this recording can support.' },
+  { id: 'ic_memo', label: 'Investment committee', hint: 'Results, guidance, drivers, risks, capital, Q&A.' },
+  { id: 'quick_take', label: 'Quick take', hint: 'Results, guidance and risks only.' },
+  { id: 'notes', label: 'Cited notes', hint: 'For anything that is not an earnings call.' },
 ];
 
 function stamp(seconds: number): string {
@@ -80,6 +90,14 @@ export default function CallPage() {
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
   const [segments, setSegments] = useState<Segment[]>([]);
   const [memo, setMemo] = useState<Memo | null>(null);
+  const [template, setTemplate] = useState('');
+  const [comparison, setComparison] = useState<Comparison | null>(null);
+  const [compareError, setCompareError] = useState<string | null>(null);
+  const [crossCall, setCrossCall] = useState(false);
+  const [siblings, setSiblings] = useState<string[]>([]);
+  const [theses, setTheses] = useState<Thesis[]>([]);
+  const [editing, setEditing] = useState(false);
+  const [fix, setFix] = useState({ ticker: '', fiscal_year: '', fiscal_quarter: '' });
 
   const [question, setQuestion] = useState('');
   const [streaming, setStreaming] = useState(false);
@@ -99,7 +117,29 @@ export default function CallPage() {
       .listChat(id)
       .then((r) => setMessages(r.items.map(toTurn)))
       .catch(() => undefined);
+    api.listTheses().then((r) => setTheses(r.items)).catch(() => undefined);
   }, [id]);
+
+  // Every other call from the same issuer, for "ask across the archive".
+  useEffect(() => {
+    if (!call?.company_id) return;
+    api
+      .callsForCompany(call.company_id)
+      .then((r) => setSiblings(r.items.filter((c) => c.status === 'ready').map((c) => c.id)))
+      .catch(() => undefined);
+  }, [call?.company_id]);
+
+  useEffect(() => {
+    if (tab !== 'compare' || !id || comparison || compareError) return;
+    api
+      .compare(id)
+      .then(setComparison)
+      .catch((err) =>
+        setCompareError(
+          err instanceof ApiError ? err.message : 'Could not compare this call.',
+        ),
+      );
+  }, [tab, id, comparison, compareError]);
 
   /**
    * Signed URLs for stored captures; the bucket is private so an <img> needs one.
@@ -156,7 +196,8 @@ export default function CallPage() {
       });
 
     try {
-      for await (const frame of api.chat({ question: text, call_ids: [call.id], history })) {
+      const scope = crossCall && siblings.length > 1 ? siblings : [call.id];
+      for await (const frame of api.chat({ question: text, call_ids: scope, history })) {
         const data = frame.data;
         switch (frame.event) {
           case 'meta':
@@ -232,6 +273,86 @@ export default function CallPage() {
       </div>
 
       {error && <div className="note note--bad">{error}</div>}
+
+      {call && (
+        <div className="panel panel--pad" style={{ marginBottom: 18 }}>
+          {!editing ? (
+            <div className="row small">
+              <span className="muted">Filed as</span>
+              <span className="tag">
+                {call.fiscal_year && call.fiscal_quarter
+                  ? `Q${call.fiscal_quarter} FY${call.fiscal_year}`
+                  : 'no period identified'}
+              </span>
+              <span className="tag">{call.kind.replace(/_/g, ' ')}</span>
+              <span className="spacer" />
+              <button
+                className="cite"
+                onClick={() => {
+                  setFix({
+                    ticker: '',
+                    fiscal_year: call.fiscal_year ? String(call.fiscal_year) : '',
+                    fiscal_quarter: call.fiscal_quarter ? String(call.fiscal_quarter) : '',
+                  });
+                  setEditing(true);
+                }}
+              >
+                Correct this
+              </button>
+            </div>
+          ) : (
+            <div className="row">
+              <input
+                className="input"
+                style={{ maxWidth: 110 }}
+                placeholder="Ticker"
+                value={fix.ticker}
+                onChange={(e) => setFix({ ...fix, ticker: e.target.value.toUpperCase() })}
+              />
+              <select
+                className="input"
+                style={{ maxWidth: 110 }}
+                value={fix.fiscal_quarter}
+                onChange={(e) => setFix({ ...fix, fiscal_quarter: e.target.value })}
+              >
+                <option value="">Quarter</option>
+                {[1, 2, 3, 4].map((q) => <option key={q} value={q}>Q{q}</option>)}
+              </select>
+              <input
+                className="input"
+                style={{ maxWidth: 110 }}
+                placeholder="Year"
+                inputMode="numeric"
+                value={fix.fiscal_year}
+                onChange={(e) => setFix({ ...fix, fiscal_year: e.target.value })}
+              />
+              <button
+                className="btn btn--primary"
+                onClick={() =>
+                  run('Save', async () => {
+                    const patch: Record<string, unknown> = {};
+                    if (fix.ticker.trim()) patch.ticker = fix.ticker.trim();
+                    if (fix.fiscal_year) patch.fiscal_year = Number(fix.fiscal_year);
+                    if (fix.fiscal_quarter) patch.fiscal_quarter = Number(fix.fiscal_quarter);
+                    if (id && Object.keys(patch).length) setCall(await api.patchCall(id, patch));
+                    setEditing(false);
+                    // The previous-quarter pairing depends on what just changed.
+                    setComparison(null);
+                    setCompareError(null);
+                  })
+                }
+              >
+                Save
+              </button>
+              <button className="btn" onClick={() => setEditing(false)}>Cancel</button>
+              <span className="hint" style={{ marginTop: 0 }}>
+                Identified from the title. Correcting it is what lets this call pair with
+                the right previous quarter.
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="tabs" role="tablist">
         {TABS.map((entry) => (
@@ -360,6 +481,16 @@ export default function CallPage() {
               ))
             )}
           </div>
+          {siblings.length > 1 && (
+            <label className="row small muted" style={{ marginBottom: 8, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={crossCall}
+                onChange={(e) => setCrossCall(e.target.checked)}
+              />
+              Search all {siblings.length} indexed calls from this company, not just this one
+            </label>
+          )}
           <form className="row" onSubmit={ask}>
             <input
               className="input"
@@ -467,6 +598,71 @@ export default function CallPage() {
         </>
       )}
 
+      {tab === 'compare' && (
+        <>
+          {compareError ? (
+            <div className="note note--hold">{compareError}</div>
+          ) : !comparison ? (
+            <p className="blank"><span className="spin" /> Comparing with the previous call</p>
+          ) : (
+            <>
+              <p className="lede">
+                What changed since{' '}
+                <Link href={`/calls/${comparison.previous_call_id}`}>the previous call</Link>.
+                Language is measured against management&apos;s own speech, so a longer call
+                does not look more hedged simply for being longer.
+              </p>
+
+              <div className="grid" style={{ marginBottom: 18 }}>
+                {comparison.deltas.map((delta) => (
+                  <div className="panel panel--pad" key={delta.metric}>
+                    <div className="stat__label" style={{ textTransform: 'capitalize' }}>
+                      {delta.metric.replace(/_/g, ' ')}
+                    </div>
+                    <div className="stat__value">
+                      {delta.current.toFixed(1)}
+                      <span
+                        style={{
+                          fontSize: 14,
+                          marginLeft: 8,
+                          fontWeight: 600,
+                          color: delta.change > 0 ? 'var(--flag)' : 'var(--steady)',
+                        }}
+                      >
+                        {delta.change > 0 ? '+' : ''}{delta.change.toFixed(1)}
+                      </span>
+                    </div>
+                    <div className="stat__sub">was {delta.previous.toFixed(1)}</div>
+                  </div>
+                ))}
+              </div>
+
+              <h2>Phrases management started using</h2>
+              <div className="panel panel--pad row">
+                {comparison.language.started?.length ? (
+                  comparison.language.started.map((phrase, i) => (
+                    <span className="tag" key={i}>{phrase}</span>
+                  ))
+                ) : (
+                  <span className="dim small">Nothing new.</span>
+                )}
+              </div>
+
+              <h2>Phrases they stopped using</h2>
+              <div className="panel panel--pad row">
+                {comparison.language.stopped?.length ? (
+                  comparison.language.stopped.map((phrase, i) => (
+                    <span className="tag" key={i}>{phrase}</span>
+                  ))
+                ) : (
+                  <span className="dim small">Nothing dropped.</span>
+                )}
+              </div>
+            </>
+          )}
+        </>
+      )}
+
       {tab === 'transcript' && (
         <div className="panel panel--pad">
           {segments.length === 0 ? (
@@ -503,21 +699,52 @@ export default function CallPage() {
       {tab === 'memo' && (
         <>
           <div className="row" style={{ marginBottom: 14 }}>
+            <select
+              className="input"
+              style={{ maxWidth: 220 }}
+              value={template}
+              onChange={(e) => setTemplate(e.target.value)}
+            >
+              {MEMO_TEMPLATES.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
             <button
               className="btn btn--primary"
               disabled={busy !== null}
               onClick={() =>
                 run('Draft memo', async () => {
-                  if (id) setMemo(await api.createMemo(id));
+                  if (id) setMemo(await api.createMemo(id, template || undefined));
                 })
               }
             >
               {busy === 'Draft memo' ? <><span className="spin" /> Drafting…</> : 'Draft a memo'}
             </button>
-            <span className="hint" style={{ marginTop: 0 }}>
-              Every claim is checked against the transcript before it is kept.
-            </span>
+            {memo && (
+              <button
+                className="btn"
+                onClick={() => {
+                  // Markdown, not PDF: it pastes into a note, an email or an IC pack
+                  // without losing the citations, which a rendered page would.
+                  const blob = new Blob([memo.body_md], { type: 'text/markdown' });
+                  const href = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = href;
+                  link.download = `${(memo.title || 'memo').replace(/[^\w.-]+/g, '-')}.md`;
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                  window.setTimeout(() => URL.revokeObjectURL(href), 10_000);
+                }}
+              >
+                Download .md
+              </button>
+            )}
           </div>
+          <p className="hint" style={{ marginTop: -6, marginBottom: 14 }}>
+            {MEMO_TEMPLATES.find((t) => t.id === template)?.hint} Every claim is checked
+            against the transcript before it is kept.
+          </p>
           {!memo ? (
             <p className="blank">No memo drafted in this session. Existing memos live under Memos.</p>
           ) : (

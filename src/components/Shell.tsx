@@ -9,6 +9,8 @@ import { BackendStatus } from './BackendStatus';
 const LINKS = [
   { href: '/overview', label: 'Overview' },
   { href: '/calls', label: 'Calls' },
+  { href: '/coverage', label: 'Coverage' },
+  { href: '/theses', label: 'Theses' },
   { href: '/memos', label: 'Memos' },
   { href: '/usage', label: 'Usage' },
   { href: '/pricing', label: 'Plans' },

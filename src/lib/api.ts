@@ -241,6 +241,41 @@ export interface Segment {
   text: string;
 }
 
+export interface Comparison {
+  current_call_id: string;
+  previous_call_id: string;
+  deltas: Array<{ metric: string; current: number; previous: number; change: number }>;
+  language: { started: string[]; stopped: string[] };
+}
+
+export interface CoverageItem {
+  id: string;
+  company_id: string;
+  ticker: string;
+  company_name: string;
+  keywords: string[];
+  calls_indexed: number;
+}
+
+export interface Thesis {
+  id: string;
+  company_id: string | null;
+  name: string;
+  statement: string;
+  is_open: boolean;
+  evidence_count: number;
+}
+
+export interface Evidence {
+  note_id: string;
+  call_id: string;
+  call_title: string;
+  period: string;
+  timestamp_s: number;
+  body: string;
+  source_url: string;
+}
+
 export interface UsageItem {
   kind: string;
   used: number;
@@ -360,7 +395,36 @@ export const api = {
   runAnalysis: (id: string) => request<Analysis>(`/calls/${id}/analysis`, { method: 'POST' }),
 
   listMemos: () => request<{ items: Memo[] }>('/memos'),
-  createMemo: (callId: string) => request<Memo>(`/calls/${callId}/memo`, { method: 'POST' }),
+  createMemo: (callId: string, template?: string) =>
+    request<Memo>(
+      `/calls/${callId}/memo${template ? `?template=${encodeURIComponent(template)}` : ''}`,
+      { method: 'POST' },
+    ),
+
+  /** Correct what identification inferred from the title. */
+  patchCall: (id: string, patch: Record<string, unknown>) =>
+    request<Call>(`/calls/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+
+  /** Diff against the same company's previous call, chosen server-side. */
+  compare: (id: string) => request<Comparison>(`/calls/${id}/compare`),
+
+  callsForCompany: (companyId: string) =>
+    request<{ items: Call[] }>(`/calls?limit=100&company_id=${companyId}`),
+
+  listCoverage: () => request<{ items: CoverageItem[] }>('/coverage'),
+  addCoverage: (ticker: string, company_name = '') =>
+    request<CoverageItem>('/coverage', {
+      method: 'POST',
+      body: JSON.stringify({ ticker, company_name }),
+    }),
+  removeCoverage: (id: string) => request<void>(`/coverage/${id}`, { method: 'DELETE' }),
+
+  listTheses: () => request<{ items: Thesis[] }>('/theses'),
+  createThesis: (input: { name: string; statement?: string; ticker?: string }) =>
+    request<Thesis>('/theses', { method: 'POST', body: JSON.stringify(input) }),
+  updateThesis: (id: string, patch: Record<string, unknown>) =>
+    request<Thesis>(`/theses/${id}`, { method: 'PATCH', body: JSON.stringify(patch) }),
+  thesisEvidence: (id: string) => request<{ items: Evidence[] }>(`/theses/${id}/evidence`),
 
   usage: () => request<{ plan: string; period_days: number; items: UsageItem[] }>('/usage'),
   plans: () => request<Plan[]>('/plans', {}, false),
