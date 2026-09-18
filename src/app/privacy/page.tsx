@@ -100,8 +100,8 @@ export default function PrivacyPage() {
       <h2>Contact</h2>
       <p>
         Questions, deletion requests, or anything else:{' '}
-        <a href="mailto:etisam.ul.haq@team-linkedmatrix.com">
-          etisam.ul.haq@team-linkedmatrix.com
+        <a href="mailto:etisamhaq24@gmail.com">
+          etisamhaq24@gmail.com
         </a>
       </p>
     </main>
