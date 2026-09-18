@@ -1,0 +1,93 @@
+# Deploy to Vercel from CI, not from Vercel's own Git integration.
+#
+# Why: the Git integration repeatedly left production deployments sitting in
+# "Queued"/"Initializing" for 10-20 minutes when a build takes ~35 seconds, and it
+# drained the backlog out of order — at one point starting a build for a commit two
+# ahead of production, which would have regressed the live site. Building here makes
+# the deploy observable, ordered, and cancellable.
+#
+# `vercel.json` disables Vercel's own deploys for `main`, so this workflow is the
+# single path to production and nothing races it.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+# Only the newest push deploys. An older commit still building is cancelled rather
+# than being allowed to finish and overwrite production — that out-of-order overwrite
+# is the exact failure this replaces.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fail here rather than shipping a broken build. The site is the marketing
+      # front door; a type error reaching production costs more than 30 seconds.
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@48
+
+      # Pulls the project's environment variables (NEXT_PUBLIC_API_URL and friends)
+      # so the build here is identical to one Vercel would have produced.
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to production
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "Deployed: $url"
+
+      # A deployment reporting success but not actually serving is the failure mode
+      # that started all this, so the job does not pass until the site answers.
+      - name: Verify production is serving this build
+        run: |
+          for attempt in $(seq 1 12); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 https://overtone-rho.vercel.app/ || true)
+            if [ "$code" = "200" ]; then
+              echo "Production answered 200"
+              exit 0
+            fi
+            echo "attempt $attempt: HTTP $code, retrying"
+            sleep 10
+          done
+          echo "Production did not return 200 after the deploy"
+          exit 1
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "### Deployment"
+            echo ""
+            echo "- Commit: \`${GITHUB_SHA::7}\`"
+            echo "- Deployment: ${{ steps.deploy.outputs.url }}"
+            echo "- Production: https://overtone-rho.vercel.app"
+          } >> "$GITHUB_STEP_SUMMARY"
