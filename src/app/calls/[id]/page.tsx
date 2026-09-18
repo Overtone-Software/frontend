@@ -13,12 +13,13 @@ import {
   type ChatMessageRecord,
   type Citation,
   type Comparison,
+  type Memo,
   type Note,
   type Segment,
   type Thesis,
 } from '@/lib/api';
 
-type Tab = 'captures' | 'ask' | 'signals' | 'compare' | 'transcript';
+type Tab = 'captures' | 'ask' | 'signals' | 'compare' | 'transcript' | 'memo';
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'captures', label: 'Captures & notes' },
@@ -26,6 +27,7 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: 'signals', label: 'Signals' },
   { id: 'compare', label: 'vs. last quarter' },
   { id: 'transcript', label: 'Transcript' },
+  { id: 'memo', label: 'Memo' },
 ];
 
 
@@ -68,6 +70,13 @@ function toTurn(record: ChatMessageRecord): ChatTurn {
   };
 }
 
+const MEMO_TEMPLATES: Array<{ id: string; label: string; hint: string }> = [
+  { id: '', label: 'Match the recording', hint: 'Picks the shape this recording can support.' },
+  { id: 'ic_memo', label: 'Investment committee', hint: 'Results, guidance, drivers, risks, capital, Q&A.' },
+  { id: 'quick_take', label: 'Quick take', hint: 'Results, guidance and risks only.' },
+  { id: 'notes', label: 'Cited notes', hint: 'For anything that is not an earnings call.' },
+];
+
 export default function CallPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
@@ -86,6 +95,8 @@ export default function CallPage() {
   const [crossCall, setCrossCall] = useState(false);
   const [siblings, setSiblings] = useState<string[]>([]);
   const [theses, setTheses] = useState<Thesis[]>([]);
+  const [memo, setMemo] = useState<Memo | null>(null);
+  const [template, setTemplate] = useState('');
   const [editing, setEditing] = useState(false);
   const [fix, setFix] = useState({ ticker: '', fiscal_year: '', fiscal_quarter: '' });
 
@@ -686,6 +697,82 @@ export default function CallPage() {
         </div>
       )}
 
+
+      {tab === 'memo' && (
+        <>
+          <div className="row" style={{ marginBottom: 14 }}>
+            <select
+              className="input"
+              style={{ maxWidth: 220 }}
+              value={template}
+              onChange={(e) => setTemplate(e.target.value)}
+            >
+              {MEMO_TEMPLATES.map((t) => (
+                <option key={t.id} value={t.id}>{t.label}</option>
+              ))}
+            </select>
+            <button
+              className="btn btn--primary"
+              disabled={busy !== null}
+              onClick={() =>
+                run('Draft memo', async () => {
+                  if (id) setMemo(await api.createMemo(id, template || undefined));
+                })
+              }
+            >
+              {busy === 'Draft memo' ? <><span className="spin" /> Drafting…</> : 'Draft a memo'}
+            </button>
+            {memo && (
+              <button
+                className="btn"
+                onClick={() => {
+                  // Markdown, not PDF: it pastes into a note, an email or an IC pack
+                  // without losing the citations, which a rendered page would.
+                  const blob = new Blob([memo.body_md], { type: 'text/markdown' });
+                  const href = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = href;
+                  link.download = `${(memo.title || 'memo').replace(/[^\w.-]+/g, '-')}.md`;
+                  document.body.appendChild(link);
+                  link.click();
+                  link.remove();
+                  window.setTimeout(() => URL.revokeObjectURL(href), 10_000);
+                }}
+              >
+                Download .md
+              </button>
+            )}
+          </div>
+          <p className="hint" style={{ marginTop: -6, marginBottom: 14 }}>
+            {MEMO_TEMPLATES.find((t) => t.id === template)?.hint} Every claim is checked
+            against the transcript before it is kept.
+          </p>
+          {!memo ? (
+            <p className="blank">
+              No memo drafted in this session. Existing memos live under Memos.
+            </p>
+          ) : (
+            <div className="panel panel--pad">
+              <Markdown source={memo.body_md} />
+              {memo.citations?.length > 0 && (
+                <div className="cites">
+                  {memo.citations.map((c) => (
+                    <a
+                      className="cite"
+                      key={c.chunk_id ?? c.n}
+                      href={call ? atTime(call.source_url, c.start_s) : '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      [{c.n}] {c.timestamp}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </Shell>
   );
 }

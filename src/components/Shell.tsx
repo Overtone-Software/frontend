@@ -11,6 +11,7 @@ const LINKS = [
   { href: '/calls', label: 'Calls' },
   { href: '/coverage', label: 'Coverage' },
   { href: '/theses', label: 'Theses' },
+  { href: '/memos', label: 'Memos' },
   { href: '/usage', label: 'Usage' },
   { href: '/settings', label: 'Settings' },
 ];
