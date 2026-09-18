@@ -19,7 +19,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await api.login(email.trim(), password);
-      router.replace('/calls');
+      router.replace('/overview');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not sign in.');
     } finally {
@@ -30,7 +30,7 @@ export default function LoginPage() {
   return (
     <div className="gate">
       <div className="gate__card">
-        <div className="gate__logo" role="img" aria-label="Overtone" />
+        <Link href="/" className="gate__logo" aria-label="Overtone — home" />
         <p className="lede" style={{ textAlign: 'center' }}>
           Sign in to your research workspace.
         </p>

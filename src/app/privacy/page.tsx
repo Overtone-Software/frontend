@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import type { Metadata } from 'next';
+import { Site } from '@/components/Site';
 
 export const metadata: Metadata = {
   title: 'Privacy — Overtone',
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
  */
 export default function PrivacyPage() {
   return (
-    <main style={{ maxWidth: '68ch', margin: '0 auto', padding: '56px 24px 80px' }}>
-      <Link href="/login" className="gate__logo" aria-label="Overtone" style={{ marginBottom: 32 }} />
-
+    <Site>
+      <section className="section section--tight">
+        <div className="wrap wrap--narrow" style={{ paddingLeft: 0, paddingRight: 0 }}>
       <h1>Privacy</h1>
       <p className="lede">
         What the Overtone extension and dashboard handle, why, and what we never touch.
@@ -104,6 +104,8 @@ export default function PrivacyPage() {
           etisamhaq24@gmail.com
         </a>
       </p>
-    </main>
+        </div>
+      </section>
+    </Site>
   );
 }

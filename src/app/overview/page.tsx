@@ -7,7 +7,6 @@ import {
   api,
   type Analysis,
   type Call,
-  type Memo,
   type SessionInfo,
   type UsageItem,
 } from '@/lib/api';
@@ -52,13 +51,11 @@ export default function OverviewPage() {
   const [calls, setCalls] = useState<Call[] | null>(null);
   const [usage, setUsage] = useState<UsageItem[]>([]);
   const [plan, setPlan] = useState('');
-  const [memos, setMemos] = useState<Memo[]>([]);
   const [signals, setSignals] = useState<Analysis | null>(null);
 
   useEffect(() => {
     api.me().then(setInfo).catch(() => undefined);
     api.usage().then((r) => { setUsage(r.items); setPlan(r.plan); }).catch(() => undefined);
-    api.listMemos().then((r) => setMemos(r.items)).catch(() => undefined);
     api
       .listCalls()
       .then((r) => {
@@ -205,29 +202,6 @@ export default function OverviewPage() {
                       <span className="dim">—</span>
                     )}
                   </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
-
-      <h2>Latest memos</h2>
-      <div className="panel">
-        {memos.length === 0 ? (
-          <p className="blank">
-            No memos yet. Open a ready call and draft one — every claim is checked against
-            the transcript before it is kept.
-          </p>
-        ) : (
-          <table>
-            <tbody>
-              {memos.slice(0, 4).map((memo) => (
-                <tr key={memo.id}>
-                  <td>
-                    <Link className="row-link" href={`/memos`}>{memo.title || 'Untitled memo'}</Link>
-                  </td>
-                  <td style={{ width: 110 }}><span className="tag">{memo.status}</span></td>
                 </tr>
               ))}
             </tbody>

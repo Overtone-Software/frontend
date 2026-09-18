@@ -326,3 +326,123 @@ tr:last-child td { border-bottom: 0; }
 .md-table table { font-size: 13px; }
 .md-table th { padding: 8px 12px; white-space: nowrap; }
 .md-table td { padding: 8px 12px; vertical-align: middle; }
+
+/* ======================================================================== */
+/* Marketing site                                                           */
+/* The app and the site share one token set on purpose: a visitor who signs  */
+/* up should not feel handed to a different product.                        */
+/* ======================================================================== */
+
+.site { display: flex; flex-direction: column; min-height: 100vh; }
+.site__body { flex: 1; }
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--rule);
+}
+.topbar__inner {
+  max-width: 1120px; margin: 0 auto; padding: 14px 28px;
+  display: flex; align-items: center; gap: 26px;
+}
+.mark {
+  display: block; width: 124px; height: 28px; flex-shrink: 0;
+  background: url('/logo-full.png') left center / contain no-repeat;
+}
+@media (prefers-color-scheme: dark) { .mark { background-image: url('/logo-full-light.png'); } }
+
+.topnav { display: flex; gap: 20px; }
+.topnav a { color: var(--slate); font-size: 14.5px; font-weight: 500; }
+.topnav a:hover { color: var(--ink); text-decoration: none; }
+.topnav a[data-active='true'] { color: var(--ink); font-weight: 650; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+.wrap--narrow { max-width: 760px; }
+.section { padding: 84px 0; }
+.section--tight { padding: 56px 0; }
+.section + .section { border-top: 1px solid var(--rule); }
+
+.eyebrow { font-size: 13px; font-weight: 650; color: var(--signal); margin: 0 0 14px; }
+.display {
+  font-size: clamp(38px, 5.6vw, 62px); font-weight: 800; letter-spacing: -0.035em;
+  line-height: 1.03; margin: 0 0 22px; max-width: 16ch;
+}
+.subhead { font-size: 18.5px; line-height: 1.6; color: var(--slate); max-width: 52ch; margin: 0 0 30px; }
+.section h2 { font-size: 28px; font-weight: 780; letter-spacing: -0.028em; margin: 0 0 12px; }
+.section__lede { font-size: 16.5px; color: var(--slate); max-width: 58ch; margin: 0 0 36px; }
+
+.hero { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; }
+
+/* The hero's right side: the product's actual mechanic, not an abstract shape.
+   A claim, the citation on it, and the moment it resolves to. */
+.proof {
+  background: var(--ink); color: #eef0f7; border-radius: var(--r-lg);
+  padding: 26px; box-shadow: 0 24px 48px -28px rgba(17, 31, 69, 0.55);
+}
+@media (prefers-color-scheme: dark) { .proof { border: 1px solid var(--rule); box-shadow: none; } }
+.proof__label { font-size: 12.5px; color: #8b97bd; margin: 0 0 14px; }
+.proof__claim { font-size: 17px; line-height: 1.6; margin: 0 0 20px; }
+.proof__n {
+  display: inline-block; font-size: 12px; font-weight: 700; color: #0e1430;
+  background: #8fa0ff; border-radius: 4px; padding: 1px 6px; vertical-align: 2px; margin-left: 3px;
+}
+.proof__rule { height: 1px; background: rgba(255,255,255,.14); margin: 0 0 18px; }
+.proof__src { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
+.proof__time {
+  font-weight: 700; color: #8fa0ff; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.proof__quote { color: #c2cbe6; line-height: 1.55; }
+.proof__who { font-size: 12.5px; color: #8b97bd; margin-top: 8px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 18px; }
+.card2 { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); padding: 22px; }
+.card2 h3 { font-size: 16px; font-weight: 700; margin: 0 0 8px; }
+.card2 p { margin: 0; color: var(--slate); font-size: 14.5px; line-height: 1.6; }
+
+/* A numbered list, used only where the content genuinely is a sequence. */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 26px; counter-reset: step; }
+.step { counter-increment: step; }
+.step::before {
+  content: counter(step);
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: var(--signal); color: #fff; font-size: 14px; font-weight: 700;
+  margin-bottom: 14px;
+}
+.step h3 { font-size: 16.5px; font-weight: 700; margin: 0 0 7px; }
+.step p { margin: 0; color: var(--slate); font-size: 14.5px; line-height: 1.6; }
+
+.venues { display: flex; flex-wrap: wrap; gap: 8px; }
+.venue {
+  border: 1px solid var(--rule); border-radius: 999px; padding: 6px 14px;
+  font-size: 13.5px; font-weight: 550; color: var(--slate); background: var(--surface);
+}
+
+.band { background: var(--ink); color: #eef0f7; border-radius: var(--r-lg); padding: 52px 44px; }
+@media (prefers-color-scheme: dark) { .band { border: 1px solid var(--rule); } }
+.band h2 { color: #fff; margin: 0 0 12px; }
+.band p { color: #9aa5c8; max-width: 52ch; margin: 0 0 26px; font-size: 16.5px; }
+
+.btn--lg { font-size: 15.5px; padding: 12px 22px; }
+
+.foot { border-top: 1px solid var(--rule); background: var(--surface); padding: 40px 0 52px; margin-top: 0; }
+.foot__grid { display: flex; flex-wrap: wrap; gap: 44px; justify-content: space-between; }
+.foot__col h4 { font-size: 12.5px; color: var(--slate-dim); font-weight: 600; margin: 0 0 10px; }
+.foot__col a { display: block; color: var(--slate); font-size: 14px; margin-bottom: 7px; }
+.foot__col a:hover { color: var(--signal); text-decoration: none; }
+.foot__note { color: var(--slate-dim); font-size: 13px; margin-top: 34px; max-width: 60ch; }
+
+.faq { border-top: 1px solid var(--rule); padding: 20px 0; }
+.faq:last-child { border-bottom: 1px solid var(--rule); }
+.faq h3 { font-size: 16px; font-weight: 650; margin: 0 0 7px; }
+.faq p { margin: 0; color: var(--slate); font-size: 15px; line-height: 1.65; max-width: 64ch; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; gap: 36px; }
+  .section { padding: 56px 0; }
+  .wrap { padding: 0 18px; }
+  .topbar__inner { padding: 12px 18px; gap: 14px; flex-wrap: wrap; }
+  .topnav { gap: 14px; order: 3; width: 100%; overflow-x: auto; }
+  .band { padding: 36px 24px; }
+}

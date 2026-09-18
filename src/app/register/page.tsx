@@ -34,7 +34,7 @@ export default function RegisterPage() {
         full_name: fullName.trim(),
         organization_name: org.trim() || `${fullName.trim() || 'My'} Research`,
       });
-      router.replace('/calls');
+      router.replace('/overview');
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Could not create that account.');
     } finally {
@@ -45,7 +45,7 @@ export default function RegisterPage() {
   return (
     <div className="gate">
       <div className="gate__card">
-        <div className="gate__logo" role="img" aria-label="Overtone" />
+        <Link href="/" className="gate__logo" aria-label="Overtone — home" />
         <h1 style={{ textAlign: 'center', fontSize: 22 }}>Create your workspace</h1>
         <p className="lede" style={{ textAlign: 'center' }}>
           Your transcripts and notes stay inside it. Nothing is pooled with other funds.
