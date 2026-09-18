@@ -20,7 +20,7 @@ const INCLUDED = [
 export default function PricingPage() {
   return (
     <Site>
-      <section className="section section--tight">
+      <section className="section section--tight hero-stage">
         <div className="wrap">
           <p className="eyebrow">Pricing</p>
           <h1 className="display" style={{ fontSize: 'clamp(32px, 4.4vw, 48px)', maxWidth: '19ch' }}>
@@ -53,7 +53,7 @@ export default function PricingPage() {
               <p style={{ fontSize: 42, fontWeight: 800, letterSpacing: '-0.03em', margin: '0 0 6px' }}>
                 Free
               </p>
-              <p style={{ color: '#9aa5c8', fontSize: 14.5, margin: '0 0 22px', lineHeight: 1.6 }}>
+              <p style={{ color: 'var(--on-deep-dim)', fontSize: 14.5, margin: '0 0 22px', lineHeight: 1.6 }}>
                 Generous limits, every feature, no card. We will give plenty of notice
                 before anything changes, and you will never lose access to research you
                 have already captured.

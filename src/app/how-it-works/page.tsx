@@ -25,7 +25,7 @@ const FAQ = [
 export default function HowItWorksPage() {
   return (
     <Site>
-      <section className="section section--tight">
+      <section className="section section--tight hero-stage">
         <div className="wrap">
           <p className="eyebrow">How it works</p>
           <h1 className="display" style={{ fontSize: 'clamp(32px, 4.4vw, 48px)', maxWidth: '18ch' }}>

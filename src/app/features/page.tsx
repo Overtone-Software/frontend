@@ -55,7 +55,7 @@ const GROUPS = [
 export default function FeaturesPage() {
   return (
     <Site>
-      <section className="section section--tight">
+      <section className="section section--tight hero-stage">
         <div className="wrap">
           <p className="eyebrow">Features</p>
           <h1 className="display" style={{ fontSize: 'clamp(32px, 4.4vw, 48px)', maxWidth: '20ch' }}>

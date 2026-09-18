@@ -117,7 +117,7 @@ export default function OverviewPage() {
               </div>
             </div>
           ) : (
-            <p style={{ color: '#9aa5c8', fontSize: 14, margin: '14px 0 20px', maxWidth: '54ch' }}>
+            <p style={{ color: 'var(--on-deep-dim)', fontSize: 14, margin: '14px 0 20px', maxWidth: '54ch' }}>
               {latest.status === 'ready'
                 ? 'No signals read yet. Run the analysis to see how management hedged and which questions went unanswered.'
                 : 'Signals appear once the transcript finishes indexing.'}
@@ -138,7 +138,7 @@ export default function OverviewPage() {
         <section className="hero">
           <span className="hero__label">Getting started</span>
           <h2 className="hero__title">Capture your first call</h2>
-          <p style={{ color: '#9aa5c8', fontSize: 14, margin: '12px 0 20px', maxWidth: '56ch' }}>
+          <p style={{ color: 'var(--on-deep-dim)', fontSize: 14, margin: '12px 0 20px', maxWidth: '56ch' }}>
             Open an earnings call on YouTube or a supported IR webcast, then press the
             camera button in the player controls. Overtone indexes the transcript and
             everything here fills in.

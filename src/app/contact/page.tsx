@@ -19,7 +19,7 @@ const EMAIL = 'etisamhaq24@gmail.com';
 export default function ContactPage() {
   return (
     <Site>
-      <section className="section section--tight">
+      <section className="section section--tight hero-stage">
         <div className="wrap">
           <p className="eyebrow">Contact</p>
           <h1 className="display" style={{ fontSize: 'clamp(32px, 4.4vw, 46px)', maxWidth: '18ch' }}>

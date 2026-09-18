@@ -13,7 +13,7 @@ const VENUES = ['YouTube', 'Q4 Inc', 'Q4 Web', 'Notified', 'Chorus Call', 'Verac
 export default function Home() {
   return (
     <Site>
-      <section className="section">
+      <section className="section hero-stage">
         <div className="wrap hero">
           <div>
             <p className="eyebrow">For analysts who have to show their work</p>
@@ -63,6 +63,26 @@ export default function Home() {
       <section className="section">
         <div className="wrap">
           <h2>A summariser gives you prose. You need evidence.</h2>
+          <div className="versus" style={{ marginBottom: 36 }}>
+            <div className="versus__side versus__side--them">
+              <h3>A generic summariser</h3>
+              <ul>
+                <li>&ldquo;Management struck an optimistic tone on margins.&rdquo;</li>
+                <li>No way to check whether they said it, or you inferred it</li>
+                <li>Numbers that may or may not appear in the transcript</li>
+                <li>Starts from nothing every quarter</li>
+              </ul>
+            </div>
+            <div className="versus__side versus__side--us">
+              <h3>Overtone</h3>
+              <ul>
+                <li>&ldquo;Gross margin expanded 180bps to 42.1 percent&rdquo; <strong>[1]</strong></li>
+                <li>Every marker resolves to a timestamp, speaker and quote</li>
+                <li>Unsupported numeric claims are shown to you, not kept</li>
+                <li>Compares against the same name&apos;s previous call</li>
+              </ul>
+            </div>
+          </div>
           <p className="section__lede">
             Anything can produce a paragraph about a call. The hard part is being able to
             stand behind it in an investment committee when someone asks where a number
@@ -113,6 +133,42 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="wrap">
+          <h2>What the language says that the numbers do not</h2>
+          <p className="section__lede">
+            Measured against management&apos;s own speech, the same way every quarter, so
+            the movement between calls is comparable rather than impressionistic.
+          </p>
+          <div className="readout">
+            <div className="readout__cell">
+              <div className="readout__k">Hedge rate</div>
+              <div className="readout__v">12.4<small className="up">+3.1</small></div>
+              <div className="readout__d">per 1,000 words, vs. last quarter</div>
+            </div>
+            <div className="readout__cell">
+              <div className="readout__k">Net confidence</div>
+              <div className="readout__v">&minus;1.8<small className="up">&minus;4.2</small></div>
+              <div className="readout__d">confident minus negative language</div>
+            </div>
+            <div className="readout__cell">
+              <div className="readout__k">Unanswered questions</div>
+              <div className="readout__v">3</div>
+              <div className="readout__d">asked, never given a figure</div>
+            </div>
+            <div className="readout__cell">
+              <div className="readout__k">Newly used phrases</div>
+              <div className="readout__v">7</div>
+              <div className="readout__d">&ldquo;macro backdrop&rdquo;, &ldquo;prudent&rdquo;, &ldquo;measured&rdquo;</div>
+            </div>
+          </div>
+          <p className="hint" style={{ marginTop: 16 }}>
+            Every number here opens the phrases that produced it, so you can disagree with
+            the measurement rather than take it on trust.
+          </p>
         </div>
       </section>
 

@@ -23,6 +23,17 @@
   --r-md: 10px;
   --r-lg: 18px;
   --shadow: 0 1px 2px rgba(17, 31, 69, 0.05);
+
+  /* A deep panel and the ink that sits ON it.
+     These are a semantic pair and must never be derived from --ink: that is the
+     page's *text* colour and it inverts in dark mode, so `background: var(--ink)`
+     produced a near-white panel carrying near-white text. */
+  --deep: #111f45;
+  --deep-edge: rgba(255, 255, 255, 0.14);
+  --on-deep: #eef0f7;
+  --on-deep-dim: #9aa5c8;
+  --on-deep-quote: #c6cfe8;
+  --on-deep-accent: #8fa0ff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +51,14 @@
     --steady: #5bd3a0;
     --hold: #e8bd63;
     --shadow: none;
+
+    /* Lifted just off the page so a deep panel still reads as raised, and the
+       on-deep inks stay light exactly as they are in light mode. */
+    /* Lifted enough to read as a raised panel against the page (1.39:1) while
+       keeping body ink on it at 12:1. A hairline edge does the rest — lightening
+       it further would start to grey out the navy the brand is built on. */
+    --deep: #202a55;
+    --deep-edge: rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -129,20 +148,20 @@ h3 { font-size: 14px; font-weight: 650; margin: 0 0 6px; }
 
 /* ---- hero: the latest call -------------------------------------------- */
 .hero {
-  background: var(--ink);
-  color: #eef0f7;
+  background: var(--deep);
+  color: var(--on-deep);
+  border: 1px solid var(--deep-edge);
   border-radius: var(--r-lg);
   padding: 24px 26px;
   margin-bottom: 8px;
 }
-@media (prefers-color-scheme: dark) { .hero { background: var(--surface); border: 1px solid var(--rule); } }
 .hero a { color: #a9b5ff; }
 .hero__title { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 0; }
-.hero__label { font-size: 13px; color: #9aa5c8; }
+.hero__label { font-size: 13px; color: var(--on-deep-dim); }
 .hero__readout { display: flex; flex-wrap: wrap; gap: 30px; margin: 20px 0 22px; }
 .hero__stat { min-width: 96px; }
 .hero__stat b { display: block; font-size: 25px; font-weight: 750; letter-spacing: -0.02em; }
-.hero__stat span { font-size: 12.5px; color: #9aa5c8; }
+.hero__stat span { font-size: 12.5px; color: var(--on-deep-dim); }
 
 /* ---- allowance meters -------------------------------------------------- */
 /* Segmented rather than smooth: it echoes the waveform in the mark, and ticks
@@ -183,7 +202,7 @@ tr:last-child td { border-bottom: 0; }
 .tag[data-status='ready'] { color: var(--steady); border-color: color-mix(in srgb, var(--steady) 45%, transparent); }
 .tag[data-status='failed'] { color: var(--flag); border-color: color-mix(in srgb, var(--flag) 45%, transparent); }
 .tag[data-status='indexing'], .tag[data-status='transcribing'], .tag[data-status='pending'] { color: var(--hold); border-color: color-mix(in srgb, var(--hold) 45%, transparent); }
-.hero .tag { background: transparent; border-color: rgba(255,255,255,.28); color: #cfd6ee; }
+.hero .tag { background: transparent; border-color: var(--deep-edge); color: var(--on-deep-quote); }
 
 .btn {
   font: inherit; font-size: 14px; font-weight: 600; padding: 9px 15px;
@@ -194,8 +213,8 @@ tr:last-child td { border-bottom: 0; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn--primary { background: var(--signal); border-color: var(--signal); color: #fff; }
 .btn--primary:hover:not(:disabled) { background: #3f52ee; border-color: #3f52ee; color: #fff; }
-.btn--onink { background: transparent; border-color: rgba(255,255,255,.3); color: #eef0f7; }
-.btn--onink:hover:not(:disabled) { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.55); color: #fff; }
+.btn--onink { background: transparent; border-color: var(--deep-edge); color: var(--on-deep); }
+.btn--onink:hover:not(:disabled) { background: rgba(255,255,255,.12); border-color: var(--on-deep-accent); color: var(--on-deep); }
 
 .input {
   width: 100%; font: inherit; padding: 10px 12px;
@@ -377,23 +396,23 @@ tr:last-child td { border-bottom: 0; }
 /* The hero's right side: the product's actual mechanic, not an abstract shape.
    A claim, the citation on it, and the moment it resolves to. */
 .proof {
-  background: var(--ink); color: #eef0f7; border-radius: var(--r-lg);
+  background: var(--deep); color: var(--on-deep); border-radius: var(--r-lg);
+  border: 1px solid var(--deep-edge);
   padding: 26px; box-shadow: 0 24px 48px -28px rgba(17, 31, 69, 0.55);
 }
-@media (prefers-color-scheme: dark) { .proof { border: 1px solid var(--rule); box-shadow: none; } }
-.proof__label { font-size: 12.5px; color: #8b97bd; margin: 0 0 14px; }
+.proof__label { font-size: 12.5px; color: var(--on-deep-dim); margin: 0 0 14px; }
 .proof__claim { font-size: 17px; line-height: 1.6; margin: 0 0 20px; }
 .proof__n {
   display: inline-block; font-size: 12px; font-weight: 700; color: #0e1430;
-  background: #8fa0ff; border-radius: 4px; padding: 1px 6px; vertical-align: 2px; margin-left: 3px;
+  background: var(--on-deep-accent); border-radius: 4px; padding: 1px 6px; vertical-align: 2px; margin-left: 3px;
 }
-.proof__rule { height: 1px; background: rgba(255,255,255,.14); margin: 0 0 18px; }
+.proof__rule { height: 1px; background: var(--deep-edge); margin: 0 0 18px; }
 .proof__src { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; }
 .proof__time {
-  font-weight: 700; color: #8fa0ff; font-variant-numeric: tabular-nums; white-space: nowrap;
+  font-weight: 700; color: var(--on-deep-accent); font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-.proof__quote { color: #c2cbe6; line-height: 1.55; }
-.proof__who { font-size: 12.5px; color: #8b97bd; margin-top: 8px; }
+.proof__quote { color: var(--on-deep-quote); line-height: 1.55; }
+.proof__who { font-size: 12.5px; color: var(--on-deep-dim); margin-top: 8px; }
 
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); gap: 18px; }
 .card2 { background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); padding: 22px; }
@@ -419,10 +438,12 @@ tr:last-child td { border-bottom: 0; }
   font-size: 13.5px; font-weight: 550; color: var(--slate); background: var(--surface);
 }
 
-.band { background: var(--ink); color: #eef0f7; border-radius: var(--r-lg); padding: 52px 44px; }
-@media (prefers-color-scheme: dark) { .band { border: 1px solid var(--rule); } }
-.band h2 { color: #fff; margin: 0 0 12px; }
-.band p { color: #9aa5c8; max-width: 52ch; margin: 0 0 26px; font-size: 16.5px; }
+.band {
+  background: var(--deep); color: var(--on-deep); border: 1px solid var(--deep-edge);
+  border-radius: var(--r-lg); padding: 52px 44px;
+}
+.band h2 { color: var(--on-deep); margin: 0 0 12px; }
+.band p { color: var(--on-deep-dim); max-width: 52ch; margin: 0 0 26px; font-size: 16.5px; }
 
 .btn--lg { font-size: 15.5px; padding: 12px 22px; }
 
@@ -446,3 +467,59 @@ tr:last-child td { border-bottom: 0; }
   .topnav { gap: 14px; order: 3; width: 100%; overflow-x: auto; }
   .band { padding: 36px 24px; }
 }
+
+/* ---- hero backdrop ----------------------------------------------------- */
+/* A waveform, because the mark is a waveform and the product is about what was
+   said out loud. Static and very low contrast: it gives the hero depth without
+   competing with the one thing on the page that should be read first. */
+.hero-stage { position: relative; overflow: hidden; }
+.hero-stage::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--signal) 0 2px,
+    transparent 2px 13px
+  );
+  -webkit-mask-image: radial-gradient(120% 70% at 78% 42%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(120% 70% at 78% 42%, #000 0%, transparent 72%);
+  opacity: 0.06;
+  pointer-events: none;
+}
+@media (prefers-color-scheme: dark) { .hero-stage::before { opacity: 0.10; } }
+.hero-stage > * { position: relative; }
+
+/* ---- cards gain a response ------------------------------------------- */
+.card2 {
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+.card2:hover {
+  border-color: color-mix(in srgb, var(--signal) 45%, var(--rule));
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -20px rgba(17, 31, 69, 0.45);
+}
+@media (prefers-reduced-motion: reduce) { .card2:hover { transform: none; } }
+@media (prefers-color-scheme: dark) { .card2:hover { box-shadow: none; } }
+
+/* ---- signals readout --------------------------------------------------- */
+/* Shows the product's distinctive output rather than describing it. */
+.readout { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: var(--r-md); overflow: hidden; }
+.readout__cell { background: var(--surface); padding: 20px 22px; }
+.readout__k { font-size: 12.5px; color: var(--slate); }
+.readout__v { font-size: 30px; font-weight: 780; letter-spacing: -0.03em; margin: 4px 0 2px; font-variant-numeric: tabular-nums; }
+.readout__v small { font-size: 14px; font-weight: 600; margin-left: 6px; }
+.readout__d { font-size: 12.5px; color: var(--slate-dim); }
+.up { color: var(--flag); }
+.down { color: var(--steady); }
+
+/* ---- side-by-side contrast -------------------------------------------- */
+.versus { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.versus__side { border: 1px solid var(--rule); border-radius: var(--r-md); padding: 22px; background: var(--surface); }
+.versus__side--them { opacity: 0.82; }
+.versus__side h3 { font-size: 14px; font-weight: 700; margin: 0 0 14px; color: var(--slate); }
+.versus__side--us h3 { color: var(--signal); }
+.versus__side ul { margin: 0; padding-left: 18px; }
+.versus__side li { margin-bottom: 9px; color: var(--slate); font-size: 14.5px; line-height: 1.6; }
+.versus__side--us li { color: var(--ink); }
+
+@media (max-width: 760px) { .versus { grid-template-columns: 1fr; } }
