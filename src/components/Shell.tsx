@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api, readSession, type SessionInfo } from '@/lib/api';
+import { BackendStatus } from './BackendStatus';
 
 const LINKS = [
   { href: '/overview', label: 'Overview' },
@@ -88,7 +89,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      <main className="main">{children}</main>
+      <main className="main">
+        <BackendStatus />
+        {children}
+      </main>
     </div>
   );
 }

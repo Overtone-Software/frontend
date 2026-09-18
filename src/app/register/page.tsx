@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
+import { BackendStatus } from '@/components/BackendStatus';
 import { api, ApiError } from '@/lib/api';
 
 /** Minimum the API will accept; stated up front rather than after a failed submit. */
@@ -49,6 +50,7 @@ export default function RegisterPage() {
         <p className="lede" style={{ textAlign: 'center' }}>
           Your transcripts and notes stay inside it. Nothing is pooled with other funds.
         </p>
+        <BackendStatus />
         {error && <div className="note note--bad">{error}</div>}
         <form onSubmit={submit} className="panel panel--pad">
           <div className="field">

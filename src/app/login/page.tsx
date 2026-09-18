@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
+import { BackendStatus } from '@/components/BackendStatus';
 import { api, ApiError } from '@/lib/api';
 
 export default function LoginPage() {
@@ -33,6 +34,7 @@ export default function LoginPage() {
         <p className="lede" style={{ textAlign: 'center' }}>
           Sign in to your research workspace.
         </p>
+        <BackendStatus />
         {error && <div className="note note--bad">{error}</div>}
         <form onSubmit={submit} className="panel panel--pad" style={{ display: 'grid', gap: 10 }}>
           <input
