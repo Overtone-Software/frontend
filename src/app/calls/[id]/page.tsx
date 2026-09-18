@@ -84,6 +84,8 @@ export default function CallPage() {
   const [streaming, setStreaming] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
   const requested = useRef<Set<string>>(new Set());
+  const alive = useRef(true);
+  useEffect(() => () => { alive.current = false; }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -98,23 +100,26 @@ export default function CallPage() {
       .catch(() => undefined);
   }, [id]);
 
-  /** Signed URLs for stored captures; the bucket is private so an <img> needs one. */
+  /**
+   * Signed URLs for stored captures; the bucket is private so an <img> needs one.
+   *
+   * `frames` is deliberately not a dependency and cancellation is tied to unmount:
+   * with it in the deps, the first URL to resolve re-ran the effect, whose cleanup
+   * cancelled every other request still in flight, and `requested` already held
+   * their ids so they were never retried.
+   */
   useEffect(() => {
-    let cancelled = false;
     for (const note of notes) {
-      if (!note.image_key || frames[note.id] || requested.current.has(note.id)) continue;
+      if (!note.image_key || requested.current.has(note.id)) continue;
       requested.current.add(note.id);
       api
         .noteImageUrl(note.id)
         .then(({ url }) => {
-          if (!cancelled) setFrames((prev) => ({ ...prev, [note.id]: url }));
+          if (alive.current) setFrames((prev) => ({ ...prev, [note.id]: url }));
         })
         .catch(() => requested.current.delete(note.id));
     }
-    return () => {
-      cancelled = true;
-    };
-  }, [notes, frames]);
+  }, [notes]);
 
   const loadTranscript = useCallback(() => {
     if (!id || segments.length) return;
