@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: 'Talk to the people building Overtone.',
 };
 
-const EMAIL = 'etisam.ul.haq@team-linkedmatrix.com';
+const EMAIL = 'etisamhaq24@gmail.com';
 
 /**
  * Deliberately not a contact form.
