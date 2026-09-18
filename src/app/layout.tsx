@@ -15,10 +15,30 @@ const manrope = Manrope({
   display: 'swap',
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://overtone-rho.vercel.app';
+
 export const metadata: Metadata = {
-  title: 'Overtone',
-  description: 'Turn an earnings call into a cited, defensible research memo.',
+  metadataBase: new URL(SITE_URL),
+  // Each page sets its own full title; this is only the fallback for the ones
+  // that do not, which are the auth screens.
+  title: 'Overtone — earnings call research you can defend',
+  description:
+    'Capture an earnings call, ask questions about it, and get answers cited to the exact moment management said it.',
   icons: { icon: '/icon.png' },
+  openGraph: {
+    type: 'website',
+    siteName: 'Overtone',
+    title: 'Overtone — earnings call research you can defend',
+    description:
+      'Every answer points at the second it was said. Capture, question and compare earnings calls.',
+    images: [{ url: '/logo-full.png', width: 720, height: 161, alt: 'Overtone' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Overtone — earnings call research you can defend',
+    description: 'Every answer points at the second it was said.',
+    images: ['/logo-full.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
