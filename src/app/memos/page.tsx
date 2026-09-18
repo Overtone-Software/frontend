@@ -1,65 +1,81 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Shell } from '@/components/Shell';
 import { api, ApiError, type Memo } from '@/lib/api';
 
 export default function MemosPage() {
   const [memos, setMemos] = useState<Memo[] | null>(null);
-  const [open, setOpen] = useState<Memo | null>(null);
+  const [open, setOpen] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api
       .listMemos()
-      .then((res) => setMemos(res.items))
-      .catch((err) => setError(err instanceof ApiError ? err.message : 'Could not load memos.'));
+      .then((r) => {
+        setMemos(r.items);
+        setOpen(r.items[0]?.id ?? null);
+      })
+      .catch((err) => {
+        setMemos([]);
+        setError(err instanceof ApiError ? err.message : 'Could not load your memos.');
+      });
   }, []);
-
-  if (open) {
-    return (
-      <Shell>
-        <button className="btn" onClick={() => setOpen(null)} style={{ marginBottom: 16 }}>
-          ← Back to memos
-        </button>
-        <h1>{open.title}</h1>
-        <p className="lede">
-          {open.citations.length} citation{open.citations.length === 1 ? '' : 's'} · every claim
-          resolves to a timestamp in the recording.
-        </p>
-        <div className="card memo">{open.body_md}</div>
-      </Shell>
-    );
-  }
 
   return (
     <Shell>
-      <h1>Memos</h1>
-      <p className="lede">Drafted from a call, with a source table you can check line by line.</p>
+      <div className="page-head">
+        <div className="page-head__text">
+          <h1>Memos</h1>
+          <p className="lede">
+            Drafted from the transcript, with every claim traced to the moment it was said.
+          </p>
+        </div>
+      </div>
+
       {error && <div className="banner banner--error">{error}</div>}
 
-      {memos === null && !error && <div className="empty">Loading…</div>}
-      {memos?.length === 0 && (
-        <div className="card">
-          <div className="empty">
-            No memos yet. Capture a call, then draft one from the extension.
-          </div>
-        </div>
-      )}
+      {memos === null ? (
+        <p className="empty"><span className="spin" /> Loading…</p>
+      ) : memos.length === 0 ? (
+        <p className="empty">
+          No memos yet. Open a call and draft one from its Memo tab.
+        </p>
+      ) : (
+        memos.map((memo) => (
+          <div className="card" key={memo.id}>
+            <div className="row">
+              <button
+                className="tab"
+                style={{ padding: 0, fontSize: 16, fontWeight: 600, color: 'var(--text)' }}
+                aria-expanded={open === memo.id}
+                onClick={() => setOpen(open === memo.id ? null : memo.id)}
+              >
+                {open === memo.id ? '▾' : '▸'} {memo.title || 'Untitled memo'}
+              </button>
+              <span className="spacer" />
+              <span className="badge">{memo.status}</span>
+              <Link className="small" href={`/calls/${memo.call_id}`}>Open call</Link>
+            </div>
 
-      {memos?.map((memo) => (
-        <button
-          key={memo.id}
-          className="card"
-          onClick={() => setOpen(memo)}
-          style={{ display: 'block', width: '100%', textAlign: 'left', cursor: 'pointer' }}
-        >
-          <strong>{memo.title}</strong>
-          <div className="stat__sub" style={{ marginTop: 4 }}>
-            {memo.citations.length} citations · {memo.status}
+            {open === memo.id && (
+              <>
+                <div className="memo" style={{ marginTop: 12 }}>{memo.body_md}</div>
+                {memo.citations?.length > 0 && (
+                  <div className="cites">
+                    {memo.citations.map((c) => (
+                      <span className="cite" key={c.chunk_id ?? c.n} title={c.speakers}>
+                        [{c.n}] {c.timestamp}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        </button>
-      ))}
+        ))
+      )}
     </Shell>
   );
 }

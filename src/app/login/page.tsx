@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
 import { api, ApiError } from '@/lib/api';
@@ -56,6 +57,13 @@ export default function LoginPage() {
             {busy ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
+        <p className="small muted" style={{ textAlign: 'center' }}>
+          No account yet? <Link href="/register">Create one</Link>
+        </p>
+        <p className="small muted" style={{ textAlign: 'center', marginTop: -6 }}>
+          Forgotten your password? Ask a workspace owner to reset it — self-serve reset
+          needs an email sender, which is not configured yet.
+        </p>
       </div>
     </div>
   );

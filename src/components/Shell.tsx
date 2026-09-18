@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { clearSession, readSession } from '@/lib/api';
+import { api, readSession } from '@/lib/api';
 
 const LINKS = [
   { href: '/calls', label: 'Calls' },
   { href: '/memos', label: 'Memos' },
   { href: '/usage', label: 'Usage' },
   { href: '/pricing', label: 'Plans' },
+  { href: '/settings', label: 'Settings' },
 ];
 
 /**
@@ -53,8 +54,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
             className="btn"
             style={{ fontSize: 12, padding: '4px 10px' }}
             onClick={() => {
-              clearSession();
-              router.replace('/login');
+              // Revoke the refresh token server-side too; clearing the tab's copy
+              // alone would leave a usable session behind.
+              void api.logout().finally(() => router.replace('/login'));
             }}
           >
             Sign out
