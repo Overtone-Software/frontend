@@ -42,14 +42,15 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="center">
-      <div className="auth-card">
-        <h1 style={{ textAlign: 'center' }}>Create your workspace</h1>
+    <div className="gate">
+      <div className="gate__card">
+        <div className="gate__logo" role="img" aria-label="Overtone" />
+        <h1 style={{ textAlign: 'center', fontSize: 22 }}>Create your workspace</h1>
         <p className="lede" style={{ textAlign: 'center' }}>
           Your transcripts and notes stay inside it. Nothing is pooled with other funds.
         </p>
-        {error && <div className="banner banner--error">{error}</div>}
-        <form onSubmit={submit} className="card">
+        {error && <div className="note note--bad">{error}</div>}
+        <form onSubmit={submit} className="panel panel--pad">
           <div className="field">
             <label htmlFor="name">Your name</label>
             <input

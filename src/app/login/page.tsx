@@ -27,14 +27,14 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="center">
-      <div className="auth-card">
-        <h1 style={{ textAlign: 'center' }}>Overtone</h1>
+    <div className="gate">
+      <div className="gate__card">
+        <div className="gate__logo" role="img" aria-label="Overtone" />
         <p className="lede" style={{ textAlign: 'center' }}>
           Sign in to your research workspace.
         </p>
-        {error && <div className="banner banner--error">{error}</div>}
-        <form onSubmit={submit} className="card" style={{ display: 'grid', gap: 10 }}>
+        {error && <div className="note note--bad">{error}</div>}
+        <form onSubmit={submit} className="panel panel--pad" style={{ display: 'grid', gap: 10 }}>
           <input
             className="input"
             type="email"

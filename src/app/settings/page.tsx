@@ -45,15 +45,15 @@ export default function SettingsPage() {
 
   return (
     <Shell>
-      <div className="page-head">
-        <div className="page-head__text">
+      <div className="head">
+        <div className="head__text">
           <h1>Settings</h1>
           <p className="lede">Your account and workspace.</p>
         </div>
       </div>
 
       <h2>Account</h2>
-      <div className="card">
+      <div className="panel panel--pad">
         <div className="row" style={{ justifyContent: 'space-between' }}>
           <span className="muted small">Name</span>
           <span>{info?.user.full_name || '—'}</span>
@@ -66,7 +66,7 @@ export default function SettingsPage() {
 
       <h2>Workspaces</h2>
       {info?.organizations.length ? (
-        <div className="card" style={{ padding: 0 }}>
+        <div className="panel">
           <table>
             <thead>
               <tr>
@@ -79,7 +79,7 @@ export default function SettingsPage() {
                 <tr key={org.id}>
                   <td>{org.name}</td>
                   <td>
-                    <span className="badge">{org.role}</span>
+                    <span className="tag">{org.role}</span>
                   </td>
                 </tr>
               ))}
@@ -91,9 +91,9 @@ export default function SettingsPage() {
       )}
 
       <h2>Change password</h2>
-      {error && <div className="banner banner--error">{error}</div>}
-      {done && <div className="banner banner--good">{done}</div>}
-      <form className="card" onSubmit={submit} style={{ maxWidth: 420 }}>
+      {error && <div className="note note--bad">{error}</div>}
+      {done && <div className="note note--good">{done}</div>}
+      <form className="panel panel--pad" onSubmit={submit} style={{ maxWidth: 420 }}>
         <div className="field">
           <label htmlFor="cur">Current password</label>
           <input
@@ -145,7 +145,7 @@ export default function SettingsPage() {
       </form>
 
       <h2>Sign out</h2>
-      <div className="card">
+      <div className="panel panel--pad">
         <button
           className="btn"
           onClick={() => {

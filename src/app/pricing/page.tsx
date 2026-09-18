@@ -21,7 +21,7 @@ export default function PricingPage() {
 
       <div className="grid">
         {plans?.map((plan) => (
-          <div className="card" key={plan.slug}>
+          <div className="panel panel--pad" key={plan.slug}>
             <div className="stat__label">{plan.name}</div>
             <div className="stat__value">
               ${Number(plan.monthly_price_usd)}

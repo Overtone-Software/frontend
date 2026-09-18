@@ -25,8 +25,8 @@ export default function MemosPage() {
 
   return (
     <Shell>
-      <div className="page-head">
-        <div className="page-head__text">
+      <div className="head">
+        <div className="head__text">
           <h1>Memos</h1>
           <p className="lede">
             Drafted from the transcript, with every claim traced to the moment it was said.
@@ -34,17 +34,17 @@ export default function MemosPage() {
         </div>
       </div>
 
-      {error && <div className="banner banner--error">{error}</div>}
+      {error && <div className="note note--bad">{error}</div>}
 
       {memos === null ? (
-        <p className="empty"><span className="spin" /> Loading…</p>
+        <p className="blank"><span className="spin" /> Loading…</p>
       ) : memos.length === 0 ? (
-        <p className="empty">
+        <p className="blank">
           No memos yet. Open a call and draft one from its Memo tab.
         </p>
       ) : (
         memos.map((memo) => (
-          <div className="card" key={memo.id}>
+          <div className="panel panel--pad" key={memo.id}>
             <div className="row">
               <button
                 className="tab"
@@ -55,13 +55,13 @@ export default function MemosPage() {
                 {open === memo.id ? '▾' : '▸'} {memo.title || 'Untitled memo'}
               </button>
               <span className="spacer" />
-              <span className="badge">{memo.status}</span>
+              <span className="tag">{memo.status}</span>
               <Link className="small" href={`/calls/${memo.call_id}`}>Open call</Link>
             </div>
 
             {open === memo.id && (
               <>
-                <div className="memo" style={{ marginTop: 12 }}>{memo.body_md}</div>
+                <div className="prose" style={{ marginTop: 12 }}>{memo.body_md}</div>
                 {memo.citations?.length > 0 && (
                   <div className="cites">
                     {memo.citations.map((c) => (

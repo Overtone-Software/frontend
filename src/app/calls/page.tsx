@@ -40,8 +40,8 @@ export default function CallsPage() {
 
   return (
     <Shell>
-      <div className="page-head">
-        <div className="page-head__text">
+      <div className="head">
+        <div className="head__text">
           <h1>Calls</h1>
           <p className="lede">
             Everything your workspace has captured. Open one to read the transcript, ask
@@ -50,16 +50,16 @@ export default function CallsPage() {
         </div>
       </div>
 
-      {error && <div className="banner banner--error">{error}</div>}
+      {error && <div className="note note--bad">{error}</div>}
 
       <div className="grid" style={{ marginBottom: 20 }}>
-        <div className="card">
+        <div className="panel panel--pad">
           <div className="stat__label">Captured</div>
           <div className="stat__value mono">{calls?.length ?? '—'}</div>
           <div className="stat__sub">{ready} indexed and ready</div>
         </div>
         {callQuota && (
-          <div className="card">
+          <div className="panel panel--pad">
             <div className="stat__label">Calls this period</div>
             <div className="stat__value mono">
               {callQuota.used}
@@ -91,15 +91,15 @@ export default function CallsPage() {
       </div>
 
       {filtered === null ? (
-        <p className="empty"><span className="spin" /> Loading…</p>
+        <p className="blank"><span className="spin" /> Loading…</p>
       ) : filtered.length === 0 ? (
-        <p className="empty">
+        <p className="blank">
           {calls?.length
             ? 'No call matches that filter.'
             : 'No calls yet. Open an earnings call and capture it with the Overtone extension.'}
         </p>
       ) : (
-        <div className="card" style={{ padding: 0 }}>
+        <div className="panel">
           <table>
             <thead>
               <tr>
@@ -113,15 +113,15 @@ export default function CallsPage() {
               {filtered.map((call) => (
                 <tr key={call.id}>
                   <td>
-                    <Link className="link-row" href={`/calls/${call.id}`}>
+                    <Link className="row-link" href={`/calls/${call.id}`}>
                       {call.title || 'Untitled call'}
                     </Link>
                     {call.status_detail && (
                       <div className="small muted">{call.status_detail}</div>
                     )}
                   </td>
-                  <td><span className="badge" data-status={call.status}>{call.status}</span></td>
-                  <td className="mono muted">{stamp(call.duration_seconds)}</td>
+                  <td><span className="tag" data-status={call.status}>{call.status}</span></td>
+                  <td className="num muted">{stamp(call.duration_seconds)}</td>
                   <td className="small">
                     {call.source_url ? (
                       <a href={call.source_url} target="_blank" rel="noreferrer">

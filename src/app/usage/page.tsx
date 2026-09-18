@@ -32,13 +32,13 @@ export default function UsagePage() {
         Rolling 30-day window{plan && ` · ${plan} plan`}. Counted from an append-only
         ledger, so every number here is auditable.
       </p>
-      {error && <div className="banner banner--error">{error}</div>}
+      {error && <div className="note note--bad">{error}</div>}
 
       <div className="grid">
         {items?.map((item) => {
           const pct = item.limit > 0 ? Math.min(100, (item.used / item.limit) * 100) : 0;
           return (
-            <div className="card" key={item.kind}>
+            <div className="panel panel--pad" key={item.kind}>
               <div className="stat__label">{LABELS[item.kind] ?? item.kind}</div>
               <div className="stat__value">
                 {item.used}

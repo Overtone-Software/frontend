@@ -201,8 +201,8 @@ export default function CallPage() {
 
   return (
     <Shell>
-      <div className="page-head">
-        <div className="page-head__text">
+      <div className="head">
+        <div className="head__text">
           <p className="small muted" style={{ margin: 0 }}>
             <Link href="/calls">← Calls</Link>
           </p>
@@ -210,7 +210,7 @@ export default function CallPage() {
           <p className="lede">
             {call ? (
               <>
-                <span className="badge" data-status={call.status}>{call.status}</span>{' '}
+                <span className="tag" data-status={call.status}>{call.status}</span>{' '}
                 {call.source_url && (
                   <>
                     · <a href={call.source_url} target="_blank" rel="noreferrer">Open source</a>
@@ -225,7 +225,7 @@ export default function CallPage() {
         </div>
       </div>
 
-      {error && <div className="banner banner--error">{error}</div>}
+      {error && <div className="note note--bad">{error}</div>}
 
       <div className="tabs" role="tablist">
         {TABS.map((entry) => (
@@ -244,7 +244,7 @@ export default function CallPage() {
       {tab === 'captures' && (
         <>
           {captures.length === 0 && plain.length === 0 ? (
-            <p className="empty">
+            <p className="blank">
               Nothing captured yet. Use the Overtone extension on the call page — the camera
               button sits in the player controls, so it works in fullscreen too.
             </p>
@@ -260,7 +260,7 @@ export default function CallPage() {
                         <div className="capture__ph">Loading image…</div>
                       )}
                       <div className="capture__bar">
-                        <span className="mono muted">{stamp(note.timestamp_s)}</span>
+                        <span className="num muted">{stamp(note.timestamp_s)}</span>
                         <span className="spacer" />
                         {frames[note.id] && (
                           <a
@@ -282,12 +282,12 @@ export default function CallPage() {
               {plain.length > 0 && (
                 <>
                   <h2>Notes</h2>
-                  <div className="card" style={{ padding: 0 }}>
+                  <div className="panel">
                     <table>
                       <tbody>
                         {plain.map((note) => (
                           <tr key={note.id}>
-                            <td className="mono muted" style={{ width: 80 }}>
+                            <td className="num muted" style={{ width: 80 }}>
                               {call?.source_url ? (
                                 <a href={atTime(call.source_url, note.timestamp_s)} target="_blank" rel="noreferrer">
                                   {stamp(note.timestamp_s)}
@@ -311,9 +311,9 @@ export default function CallPage() {
 
       {tab === 'ask' && (
         <>
-          <div className="card">
+          <div className="panel panel--pad">
             {messages.length === 0 ? (
-              <p className="empty" style={{ padding: '20px 0' }}>
+              <p className="blank" style={{ padding: '20px 0' }}>
                 Ask anything management said. Every answer cites the moment it came from.
               </p>
             ) : (
@@ -341,7 +341,7 @@ export default function CallPage() {
                     </div>
                   )}
                   {message.uncited.length > 0 && (
-                    <div className="banner banner--warn" style={{ marginTop: 8 }}>
+                    <div className="note note--hold" style={{ marginTop: 8 }}>
                       Not supported by the transcript:
                       <ul style={{ margin: '4px 0 0', paddingLeft: 18 }}>
                         {message.uncited.map((claim, i) => (
@@ -390,26 +390,26 @@ export default function CallPage() {
           </div>
 
           {!analysis ? (
-            <p className="empty">No analysis yet. Run one once the transcript is indexed.</p>
+            <p className="blank">No analysis yet. Run one once the transcript is indexed.</p>
           ) : (
             <>
               <div className="grid">
-                <div className="card">
+                <div className="panel panel--pad">
                   <div className="stat__label">Hedge rate</div>
                   <div className="stat__value mono">{analysis.tone.hedge_rate.toFixed(1)}</div>
                   <div className="stat__sub">per 1,000 words</div>
                 </div>
-                <div className="card">
+                <div className="panel panel--pad">
                   <div className="stat__label">Net confidence</div>
                   <div className="stat__value mono">{analysis.tone.net_confidence.toFixed(1)}</div>
                   <div className="stat__sub">confident minus negative</div>
                 </div>
-                <div className="card">
+                <div className="panel panel--pad">
                   <div className="stat__label">Q&amp;A pairs</div>
                   <div className="stat__value mono">{analysis.qa_pairs}</div>
                   <div className="stat__sub">{analysis.segments} segments</div>
                 </div>
-                <div className="card">
+                <div className="panel panel--pad">
                   <div className="stat__label">Unanswered</div>
                   <div className="stat__value mono">{analysis.dodges.length}</div>
                   <div className="stat__sub">questions flagged</div>
@@ -421,7 +421,7 @@ export default function CallPage() {
                   <h2>Hedging phrases found</h2>
                   <div className="card row">
                     {analysis.tone.hedges_found.slice(0, 40).map((phrase, i) => (
-                      <span className="badge" key={i}>{phrase}</span>
+                      <span className="tag" key={i}>{phrase}</span>
                     ))}
                   </div>
                 </>
@@ -431,24 +431,24 @@ export default function CallPage() {
                 <>
                   <h2>Questions that did not get an answer</h2>
                   {analysis.dodges.map((dodge) => (
-                    <div className="card" key={dodge.question_id}>
+                    <div className="panel panel--pad" key={dodge.question_id}>
                       <div className="row small muted" style={{ marginBottom: 6 }}>
                         {call?.source_url ? (
                           <a href={atTime(call.source_url, dodge.start_s)} target="_blank" rel="noreferrer">
                             {stamp(dodge.start_s)}
                           </a>
                         ) : (
-                          <span className="mono">{stamp(dodge.start_s)}</span>
+                          <span className="num">{stamp(dodge.start_s)}</span>
                         )}
                         <span>· {dodge.analyst || 'Analyst'}</span>
                         <span className="spacer" />
-                        <span className="badge">score {dodge.score.toFixed(2)}</span>
+                        <span className="tag">score {dodge.score.toFixed(2)}</span>
                       </div>
                       <div>{dodge.question}</div>
                       {dodge.reasons.length > 0 && (
                         <div className="row" style={{ marginTop: 8 }}>
                           {dodge.reasons.map((reason, i) => (
-                            <span className="badge" key={i}>{reason}</span>
+                            <span className="tag" key={i}>{reason}</span>
                           ))}
                         </div>
                       )}
@@ -462,9 +462,9 @@ export default function CallPage() {
       )}
 
       {tab === 'transcript' && (
-        <div className="card">
+        <div className="panel panel--pad">
           {segments.length === 0 ? (
-            <p className="empty" style={{ padding: '20px 0' }}>
+            <p className="blank" style={{ padding: '20px 0' }}>
               No transcript indexed for this call yet.
             </p>
           ) : (
@@ -513,11 +513,11 @@ export default function CallPage() {
             </span>
           </div>
           {!memo ? (
-            <p className="empty">No memo drafted in this session. Existing memos live under Memos.</p>
+            <p className="blank">No memo drafted in this session. Existing memos live under Memos.</p>
           ) : (
-            <div className="card">
+            <div className="panel panel--pad">
               <h2 style={{ marginTop: 0 }}>{memo.title}</h2>
-              <div className="memo">{memo.body_md}</div>
+              <div className="prose">{memo.body_md}</div>
               {memo.citations?.length > 0 && (
                 <div className="cites">
                   {memo.citations.map((c) => (
